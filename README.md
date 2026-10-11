@@ -273,48 +273,62 @@ pip freeze > requirements.txt
 
 The project package itself is configured through `pyproject.toml`.
 
-## Current Project Status
+## Project Phases and Status
 
-### Phase 0 — Problem Definition
+### Phase 0 — Problem Definition · Complete
 
-**Completed**
+Defined the credit-default problem, target, intended user, prediction
+objective, business context, dataset, and analytical boundaries.
 
-Established:
+### Phase 1 — Project and Data Foundation · Complete
 
-- business problem
-- target variable
-- intended user
-- prediction objective
-- risk representation
-- business decision framing
-- analytical boundaries
-- dataset selection
+Established the repository and Python environment; acquired, loaded, and
+validated the source dataset.
 
-### Phase 1 — Project & Data Foundation
+### Phase 2 — Data Understanding and Exploration · Complete
 
-**In progress / near completion**
+Examined dataset semantics, distributions, repayment behavior,
+relationships with default, and data-quality considerations.
 
-Completed components include:
+### Phase 3 — Data Preparation · Complete
 
-- repository structure
-- virtual environment
-- dependency setup
-- raw dataset acquisition
-- raw dataset loading
-- initial data validation
+Implemented cleaning, validation, feature preparation, and reproducible
+train/validation/test splits.
 
-### Phase 2 — Data Understanding & Exploration
+### Phase 4 — Baseline Modeling · Complete
 
-**Next**
+Established baseline classifiers and evaluation practices for comparison
+with later models.
 
-Planned work includes:
+### Phase 5 — Model Development and Evaluation · Complete
 
-- understanding dataset semantics
-- examining distributions
-- understanding repayment behavior
-- investigating relationships with default
-- identifying data-quality and domain considerations
-- developing an analytical understanding before modeling
+Compared and tuned candidate models, evaluated probability quality and
+calibration, and selected HistGradientBoosting with engineered features.
+The untouched test-set ROC-AUC was 0.7800, PR-AUC was 0.5515, and Brier
+score was 0.1352.
+
+### Phase 6 — Explainability and Risk Segmentation · Complete
+
+Added global feature importance, engineered-feature relationship
+analysis, grouped local explanations, analyst-facing customer summaries,
+and descriptive validation risk bands. The full test suite passed with
+134 tests.
+
+### Phase 7 — Decision Intelligence and Risk Prioritization · Complete
+
+The agreed objective is to prioritize customers for limited analyst
+attention using predicted default risk. The dataset lacks intervention
+costs, outcomes, and causal evidence, so the phase will not claim intervention
+effectiveness.
+
+- **Complete:** 7.1 define the objective; 7.2 audit available inputs; 7.3
+  compare probability ranking with random selection; 7.4 show illustrative
+  capacity scenarios; 7.5 implement the deterministic decision engine; 7.6
+  evaluate review-policy scenarios; 7.7 document recommendations and limits;
+  7.8 run full Phase 7 validation (176 tests passed).
+- **Remaining:** None.
+
+See the [complete Phase 7 documentation](docs/decision_intelligence.md) for all step walkthroughs, code listings, analysis, and recommendations in order.
 
 ## Modeling Principles
 
