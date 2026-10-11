@@ -20,9 +20,11 @@ from propensity_prediction.features.engineering import engineer_features
 from propensity_prediction.models.feature_experiment import ENGINEERED_FEATURES
 
 from propensity_prediction.data.schema import (
+    IDENTIFIER_COLUMNS,
     NUMERICAL_FEATURES,
     CATEGORICAL_FEATURES,
     ORDINAL_FEATURES,
+    get_feature_columns,
 )
 
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
@@ -94,11 +96,27 @@ def _build_pipeline(
     )
 
 
-def _prepare_features(
+def prepare_model_features(
     X: pd.DataFrame,
     use_engineered_features: bool,
 ):
-    """Prepare features and return the corresponding schema."""
+    """Validate and prepare prediction features and their model schema."""
+    if not isinstance(X, pd.DataFrame) or X.empty:
+        raise ValueError("Customer data must be a non-empty DataFrame.")
+    if "DEFAULT" in X.columns:
+        raise ValueError("DEFAULT is an outcome and must not be included in prediction data.")
+
+    expected_columns = set(IDENTIFIER_COLUMNS + get_feature_columns())
+    actual_columns = set(X.columns)
+    missing_columns = expected_columns - actual_columns
+    extra_columns = actual_columns - expected_columns
+    if missing_columns:
+        raise ValueError(f"Customer data is missing required columns: {sorted(missing_columns)}")
+    if extra_columns:
+        raise ValueError(f"Customer data contains unsupported columns: {sorted(extra_columns)}")
+    if X[IDENTIFIER_COLUMNS[0]].isna().any() or X[IDENTIFIER_COLUMNS[0]].duplicated().any():
+        raise ValueError("Customer IDs must be non-missing and unique.")
+
     X = X.drop(columns=["ID"]).copy()
 
     if use_engineered_features:
@@ -116,6 +134,14 @@ def _prepare_features(
         CATEGORICAL_FEATURES,
         ORDINAL_FEATURES,
     )
+
+
+def _prepare_features(
+    X: pd.DataFrame,
+    use_engineered_features: bool,
+):
+    """Backward-compatible internal name for model feature preparation."""
+    return prepare_model_features(X, use_engineered_features)
 
 
 def _evaluate_probabilities(

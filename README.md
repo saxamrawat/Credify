@@ -330,6 +330,23 @@ effectiveness.
 
 See the [complete Phase 7 documentation](docs/decision_intelligence.md) for all step walkthroughs, code listings, analysis, and recommendations in order.
 
+### Phase 8 — Analyst API and Dashboard · Complete
+
+- **Complete:** 8.1 select the FastAPI + Streamlit architecture; 8.2 define
+  the batch JSON request and response contract; 8.3 package the locked model
+  for reproducible inference; 8.4 implement the FastAPI scoring service and
+  review-queue endpoint; 8.5 build the single-page Streamlit CSV upload and
+  analyst dashboard; 8.6 add automated CSV/API checks, verify the real-model
+  dashboard workflow, and measure synthetic batch sizes.
+- **Complete:** 8.7 enforce the agreed 30,000-customer maximum in CSV uploads
+  and API requests; verify the accepted and rejected boundaries.
+- **Remaining:** None. The 30,000-row limit is an initial operational cap;
+  deployment on the target Droplet should review request and upload limits.
+- **Deployment:** reserved for the final project phase on the user's cloud
+  Droplet.
+
+See the [complete Phase 8 documentation](docs/analyst_api_dashboard.md) for all seven steps in order, including the decisions, detailed code walkthroughs, integration verification, and 30,000-row portfolio cap.
+
 ## Modeling Principles
 
 The project will prioritize analytical correctness over simply achieving a high accuracy score.
