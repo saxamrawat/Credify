@@ -343,9 +343,32 @@ See the [complete Phase 7 documentation](docs/decision_intelligence.md) for all 
 - **Remaining:** None. The 30,000-row limit is an initial operational cap;
   deployment on the target Droplet should review request and upload limits.
 - **Deployment:** reserved for the final project phase on the user's cloud
-  Droplet.
+  Droplet (Phase 11).
 
 See the [complete Phase 8 documentation](docs/analyst_api_dashboard.md) for all seven steps in order, including the decisions, detailed code walkthroughs, integration verification, and 30,000-row portfolio cap.
+
+### Phase 9 — Portfolio Insights Dashboard · Complete
+
+Built the custom HTML/CSS/JavaScript analyst dashboard over FastAPI, including
+portfolio overview, cohort exploration, review queue, selection profile,
+feature insights, customer drilldown, responsible-use safeguards, exports,
+and responsive accessibility improvements. Automated validation passed 210
+tests. The dashboard describes model estimates and input patterns; it does not
+establish outcomes, causes, intervention effects, or fairness.
+
+See the [complete Phase 9 documentation](docs/portfolio_insights_dashboard.md)
+for the plan and all 14 step walkthroughs in order.
+
+### Phase 10 — GenAI Analyst Layer · Planned
+
+Add natural-language summaries or portfolio questions only after the
+dashboard's calculations, definitions, and workflows are stable.
+
+### Phase 11 — Deployment to Cloud Droplet · Planned · Final Phase
+
+Deploy the completed application to the user's cloud Droplet after the
+dashboard and GenAI phases are complete. Security, networking, runtime,
+monitoring, backup, and production capacity decisions belong here.
 
 ## Modeling Principles
 

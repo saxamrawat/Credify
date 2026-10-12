@@ -5,6 +5,10 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import pandas as pd
+
+from propensity_prediction.data.build import PROCESSED_DATA_PATH, build_processed_dataset
+from propensity_prediction.data.split import split_dataset
 from propensity_prediction.models.artifact import (
     DEFAULT_MODEL_ARTIFACT_PATH,
     load_model_artifact,
@@ -21,6 +25,7 @@ class ModelArtifactRepository:
     def __init__(self, path: str | Path = DEFAULT_MODEL_ARTIFACT_PATH) -> None:
         self.path = Path(path)
         self._model_artifact: dict | None = None
+        self._explanation_background: pd.DataFrame | None = None
         self._load_error: Exception | None = None
 
     @property
@@ -46,3 +51,15 @@ class ModelArtifactRepository:
                 "The model artifact is not available. Check the API logs and artifact path."
             ) from self._load_error
         return self._model_artifact
+
+    def get_explanation_background(self) -> pd.DataFrame:
+        """Return the established training partition for local explanations."""
+        if self._explanation_background is None:
+            dataset = (
+                pd.read_csv(PROCESSED_DATA_PATH)
+                if PROCESSED_DATA_PATH.is_file()
+                else build_processed_dataset()
+            )
+            split = split_dataset(dataset)
+            self._explanation_background = split.X_train.reset_index(drop=True)
+        return self._explanation_background

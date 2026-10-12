@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from propensity_prediction.api.errors import (
@@ -18,6 +19,7 @@ from propensity_prediction.api.errors import (
 from propensity_prediction.api.repository import ModelArtifactRepository
 from propensity_prediction.api.routes import router
 from propensity_prediction.api.service import ReviewQueueService
+from propensity_prediction.dashboard import STATIC_ASSETS_DIRECTORY
 from propensity_prediction.models.artifact import DEFAULT_MODEL_ARTIFACT_PATH
 
 
@@ -51,6 +53,11 @@ def create_app(
         lifespan=lifespan,
     )
     app.include_router(router)
+    app.mount(
+        "/",
+        StaticFiles(directory=STATIC_ASSETS_DIRECTORY, html=True),
+        name="dashboard",
+    )
 
     @app.exception_handler(RequestValidationError)
     async def request_validation_handler(

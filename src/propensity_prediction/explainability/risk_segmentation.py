@@ -16,6 +16,22 @@ from propensity_prediction.explainability.global_importance import (
 
 
 DEFAULT_N_BANDS = 4
+VALIDATION_RISK_BAND_CUT_POINTS = (
+    0.08940226956400625,
+    0.1444458140540088,
+    0.26307539734969276,
+)
+VALIDATION_RISK_BAND_LABELS = (
+    "Lower",
+    "Moderate",
+    "Elevated",
+    "Highest",
+)
+VALIDATION_RISK_BAND_REFERENCE = (
+    "Phase 6 validation probabilities from the locked HistGradientBoosting "
+    "engineered-feature model"
+)
+VALIDATION_RISK_BAND_METHOD = "fixed_validation_cohort_quantiles"
 RISK_LABELS_BY_COUNT = {
     1: ("Single score band",),
     2: ("Lower", "Higher"),
@@ -36,6 +52,20 @@ class RiskBandDefinition:
     def cut_points(self) -> tuple[float, ...]:
         """Interior score boundaries, excluding open-ended endpoints."""
         return self.edges[1:-1]
+
+
+def validation_risk_band_definition() -> RiskBandDefinition:
+    """Return the fixed Phase 6 validation-cohort bands for inference scores.
+
+    These descriptive cut points were fitted using validation predictions
+    from the selected HistGradientBoosting model and verified against the
+    packaged inference artifact. They do not define an action threshold.
+    """
+    return RiskBandDefinition(
+        edges=(-np.inf, *VALIDATION_RISK_BAND_CUT_POINTS, np.inf),
+        labels=VALIDATION_RISK_BAND_LABELS,
+        requested_bands=DEFAULT_N_BANDS,
+    )
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
 import pytest
 from pydantic import ValidationError
 
@@ -9,10 +10,21 @@ from propensity_prediction.api.errors import (
     ModelArtifactUnavailable,
 )
 from propensity_prediction.api.repository import ModelArtifactRepository
-from propensity_prediction.api.schemas import ReviewQueueRequest
+from propensity_prediction.api.schemas import CustomerInput, ReviewQueueRequest, ReviewQueueResponse
 from propensity_prediction.api.service import ReviewQueueService
 from propensity_prediction.data.schema import get_feature_columns
+from propensity_prediction.explainability.risk_segmentation import (
+    VALIDATION_RISK_BAND_CUT_POINTS,
+    fit_risk_bands,
+    validation_risk_band_definition,
+)
 from propensity_prediction.limits import MAX_CUSTOMER_ROWS
+from propensity_prediction.data.build import build_processed_dataset
+from propensity_prediction.data.split import split_dataset
+from propensity_prediction.models.artifact import (
+    load_model_artifact,
+    predict_default_probabilities,
+)
 
 
 def _customer(customer_id: int) -> dict:
@@ -42,7 +54,10 @@ class InMemoryModelRepository:
     is_loaded = True
 
     def get_model_artifact(self) -> dict:
-        return {"test_double": True}
+        return {"estimator": "model-double"}
+
+    def get_explanation_background(self):
+        return "training-reference"
 
 
 def _build_service(monkeypatch: pytest.MonkeyPatch, scores: list[float]) -> ReviewQueueService:
@@ -108,14 +123,33 @@ def test_service_returns_full_portfolio_sorted_with_capacity_summary(
     )
 
     result = service.build_queue(request)
+    response = ReviewQueueResponse.model_validate(result)
 
-    assert result["population_count"] == 3
+    assert response.population_count == 3
     assert result["capacity"] == {
         "requested_review_count": 2,
         "target_review_count": 2,
         "selected_count": 2,
         "unused_capacity": 0,
     }
+    assert result["portfolio_summary"]["probability_summary"] == {
+        "minimum": 0.2,
+        "percentile_25": 0.35,
+        "median": 0.5,
+        "mean": pytest.approx(0.5333333333333333),
+        "percentile_75": 0.7,
+        "maximum": 0.9,
+    }
+    assert result["portfolio_summary"]["risk_band_method"] == "fixed_validation_cohort_quantiles"
+    assert [band["label"] for band in result["portfolio_summary"]["risk_bands"]] == [
+        "Lower", "Moderate", "Elevated", "Highest"
+    ]
+    assert [band["customer_count"] for band in result["portfolio_summary"]["risk_bands"]] == [
+        0, 0, 1, 2
+    ]
+    assert sum(
+        band["portfolio_share"] for band in result["portfolio_summary"]["risk_bands"]
+    ) == pytest.approx(1.0)
     assert [row["customer_id"] for row in result["customers"]] == [1002, 1003, 1001]
     assert [row["selected_for_review"] for row in result["customers"]] == [True, True, False]
 
@@ -150,6 +184,45 @@ def test_zero_capacity_is_valid(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result["capacity"]["unused_capacity"] == 0
 
 
+def test_customer_explanation_reuses_grouped_explainer_and_training_reference(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured = {}
+
+    def fake_explainer(**kwargs):
+        captured.update(kwargs)
+        return type(
+            "Explanation",
+            (),
+            {
+                "predicted_probability": 0.42,
+                "baseline_probability": 0.25,
+                "method": "grouped interventional Shapley values",
+                "background_size": 64,
+                "contributions": pd.DataFrame(
+                    [{"feature_group": "repayment_status_history", "contribution": 0.17, "direction": "higher than baseline"}]
+                ),
+            },
+        )()
+
+    monkeypatch.setattr(
+        "propensity_prediction.api.service.explain_customer_prediction",
+        fake_explainer,
+    )
+    repository = InMemoryModelRepository()
+    service = ReviewQueueService(repository)
+
+    result = service.explain_customer(CustomerInput.model_validate(_customer(1001)))
+
+    assert result["customer_id"] == 1001
+    assert result["estimated_default_probability"] == 0.42
+    assert result["reference_probability"] == 0.25
+    assert result["difference_from_reference"] == pytest.approx(0.17)
+    assert captured["model"] == "model-double"
+    assert captured["background"] == "training-reference"
+    assert "not causes" in result["limitations"]
+
+
 def test_duplicate_portfolio_ids_raise_domain_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -170,3 +243,25 @@ def test_repository_reports_missing_artifact_as_unavailable(tmp_path) -> None:
 
     with pytest.raises(ModelArtifactUnavailable, match="artifact is not available"):
         repository.get_model_artifact()
+
+
+def test_fixed_risk_bands_match_documented_validation_definition() -> None:
+    definition = validation_risk_band_definition()
+
+    assert definition.cut_points == VALIDATION_RISK_BAND_CUT_POINTS
+    assert definition.labels == ("Lower", "Moderate", "Elevated", "Highest")
+
+
+def test_packaged_model_reproduces_phase_6_validation_risk_band_cut_points() -> None:
+    split = split_dataset(build_processed_dataset())
+    artifact = load_model_artifact()
+    probabilities = predict_default_probabilities(artifact, split.X_validation)
+
+    fitted_reference = fit_risk_bands(probabilities)
+
+    assert np.allclose(
+        fitted_reference.cut_points,
+        VALIDATION_RISK_BAND_CUT_POINTS,
+        rtol=0,
+        atol=1e-12,
+    )

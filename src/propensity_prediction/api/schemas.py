@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
@@ -71,15 +71,79 @@ class CustomerQueueItem(BaseModel):
     reason: str
 
 
+class ProbabilitySummary(BaseModel):
+    minimum: float = Field(ge=0, le=1)
+    percentile_25: float = Field(ge=0, le=1)
+    median: float = Field(ge=0, le=1)
+    mean: float = Field(ge=0, le=1)
+    percentile_75: float = Field(ge=0, le=1)
+    maximum: float = Field(ge=0, le=1)
+
+
+class RiskBandSummary(BaseModel):
+    label: str
+    customer_count: int = Field(ge=0)
+    portfolio_share: float = Field(ge=0, le=1)
+    lower_bound_exclusive: float | None = Field(default=None, ge=0, le=1)
+    upper_bound_inclusive: float | None = Field(default=None, ge=0, le=1)
+
+
+class PortfolioSummary(BaseModel):
+    probability_summary: ProbabilitySummary
+    risk_band_method: Literal["fixed_validation_cohort_quantiles"]
+    risk_band_reference: str
+    risk_bands: list[RiskBandSummary]
+
+
 class ReviewQueueResponse(BaseModel):
     population_count: int
     capacity: CapacitySummary
+    portfolio_summary: PortfolioSummary
     customers: list[CustomerQueueItem]
 
 
 class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
+
+
+class ModelFeatureImportanceItem(BaseModel):
+    feature: str
+    description: str
+    importance_mean: float
+    importance_std: float = Field(ge=0)
+
+
+class ModelFeatureImportanceReference(BaseModel):
+    method: Literal["permutation_importance"]
+    scoring_metric: Literal["average_precision"]
+    evaluation_reference: str
+    repeats: int = Field(ge=1)
+    random_state: int
+    features: list[ModelFeatureImportanceItem]
+
+
+class DashboardConfigResponse(BaseModel):
+    max_customer_rows: int = Field(ge=1)
+    required_columns: list[str]
+    model_feature_importance: ModelFeatureImportanceReference
+
+
+class LocalContribution(BaseModel):
+    feature_group: str
+    contribution: float
+    direction: str
+
+
+class CustomerExplanationResponse(BaseModel):
+    customer_id: int
+    estimated_default_probability: float = Field(ge=0, le=1)
+    reference_probability: float = Field(ge=0, le=1)
+    difference_from_reference: float
+    method: str
+    background_size: int = Field(ge=1)
+    contributions: list[LocalContribution]
+    limitations: str
 
 
 class APIErrorBody(BaseModel):
