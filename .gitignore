@@ -56,3 +56,4 @@ coverage.xml
 
 # Directories
 data/raw/
+artifacts/genai

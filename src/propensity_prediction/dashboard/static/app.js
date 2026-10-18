@@ -86,11 +86,20 @@ const elements = {
   exportFiltered: document.querySelector("#export-filtered"),
   exportRanking: document.querySelector("#export-ranking"),
   exportQueue: document.querySelector("#export-queue"),
+  analystForm: document.querySelector("#analyst-form"),
+  analystQuestion: document.querySelector("#analyst-question"),
+  analystSubmit: document.querySelector("#analyst-submit"),
+  analystAnswer: document.querySelector("#analyst-answer"),
+  analystState: document.querySelector("#analyst-state"),
+  analystClaims: document.querySelector("#analyst-claims"),
+  analystCitations: document.querySelector("#analyst-citations"),
+  analystDisclaimer: document.querySelector("#analyst-disclaimer"),
 };
 
 let dashboardConfig = null;
 let selectedFile = null;
 let currentPortfolio = [];
+let currentInputRows = [];
 let currentResult = null;
 let filteredPortfolio = [];
 let currentPage = 0;
@@ -1156,6 +1165,7 @@ function setActiveView(view) {
 
 function renderOverview(result, inputRows) {
   currentResult = result;
+  currentInputRows = inputRows;
   const inputsById = new Map(inputRows.map((row) => [row.ID, row]));
   currentPortfolio = result.customers.map((scoredRow) => ({
     ...inputsById.get(scoredRow.customer_id),
@@ -1177,6 +1187,123 @@ function renderOverview(result, inputRows) {
   runExploreFilters();
   setActiveView("overview");
   elements.results.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function buildAnalystFilters() {
+  const filters = {
+    minimum_probability: Number(elements.scoreMinFilter.value || 0),
+    maximum_probability: Number(elements.scoreMaxFilter.value || 1),
+  };
+  if (elements.riskBandFilter.value) filters.risk_band = elements.riskBandFilter.value;
+  if (elements.reviewStatusFilter.value) filters.review_status = elements.reviewStatusFilter.value;
+
+  const feature = elements.featureFilter.value;
+  if (feature) {
+    filters.feature = feature;
+    const categoryValue = document.querySelector("#feature-filter-value")?.value;
+    if (categoryValue !== undefined && categoryValue !== "") {
+      filters.category_value = Number(categoryValue);
+    } else {
+      const minimum = document.querySelector("#feature-filter-min")?.value;
+      const maximum = document.querySelector("#feature-filter-max")?.value;
+      if (minimum !== undefined && minimum !== "") filters.feature_minimum = Number(minimum);
+      if (maximum !== undefined && maximum !== "") filters.feature_maximum = Number(maximum);
+    }
+  }
+  return filters;
+}
+
+function clearAnalystAnswer() {
+  elements.analystState.textContent = "";
+  elements.analystClaims.replaceChildren();
+  elements.analystCitations.replaceChildren();
+  elements.analystDisclaimer.textContent = "";
+}
+
+function renderAnalystAnswer(answer) {
+  clearAnalystAnswer();
+  if (answer.status === "refused") {
+    elements.analystState.textContent = answer.refusal_code === "small_cell_suppressed"
+      ? "This response is unavailable because the filtered group is below the privacy threshold. Broaden the cohort and try again."
+      : "This question could not be answered from the approved portfolio evidence. Try asking about a displayed metric, cohort summary, queue behavior, or explanation limitation.";
+  } else {
+    elements.analystState.textContent = "Generated commentary";
+    answer.claims.forEach((claim) => {
+      const paragraph = document.createElement("p");
+      paragraph.className = `analyst-claim analyst-claim-${claim.kind}`;
+      paragraph.textContent = claim.text;
+      elements.analystClaims.append(paragraph);
+    });
+    const citations = document.createElement("ul");
+    citations.className = "analyst-citation-list";
+    answer.citations.forEach((citation) => {
+      const item = document.createElement("li");
+      const label = document.createElement("strong");
+      label.textContent = citation.key.split(".").map((part) => part
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase())).join(" · ");
+      const value = document.createElement("span");
+      const formatted = typeof citation.value === "number" && citation.unit === "probability"
+        ? formatPercent(citation.value)
+        : typeof citation.value === "object"
+          ? JSON.stringify(citation.value)
+          : String(citation.value);
+      value.textContent = `${formatted}${citation.unit ? ` ${citation.unit}` : ""} · ${citation.scope.replaceAll("_", " ")}`;
+      const definition = document.createElement("small");
+      definition.textContent = citation.definition;
+      item.append(label, value, definition);
+      citations.append(item);
+    });
+    if (citations.childElementCount) elements.analystCitations.append(citations);
+  }
+  elements.analystDisclaimer.textContent = answer.disclaimer || "Generated commentary is not an outcome, cause, or recommendation.";
+  elements.analystAnswer.hidden = false;
+}
+
+async function askAnalyst(question) {
+  if (!currentResult || !currentInputRows.length) return;
+  elements.analystAnswer.hidden = false;
+  elements.analystAnswer.setAttribute("aria-busy", "true");
+  elements.analystState.textContent = "Preparing an evidence-based answer…";
+  elements.analystClaims.replaceChildren();
+  elements.analystCitations.replaceChildren();
+  elements.analystDisclaimer.textContent = "";
+  elements.analystSubmit.disabled = true;
+  document.querySelectorAll("[data-analyst-prompt]").forEach((button) => { button.disabled = true; });
+  try {
+    const response = await fetch("/v1/analyst-answer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customers: currentInputRows,
+        max_review_count: currentResult.capacity.requested_review_count,
+        filters: buildAnalystFilters(),
+        group_by: elements.groupByField.value || null,
+        question,
+      }),
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      const message = payload?.error?.message;
+      const details = payload?.error?.details?.filter(Boolean).join(" ");
+      if (response.status === 503) {
+        throw new Error("Generated insights are not enabled yet. Portfolio scoring and dashboard summaries are still available.");
+      }
+      throw new Error(details || message || "The insight request could not be completed.");
+    }
+    renderAnalystAnswer(payload);
+  } catch (error) {
+    clearAnalystAnswer();
+    elements.analystState.textContent = error instanceof TypeError
+      ? "The insight service is temporarily unavailable. Your portfolio analysis is still available."
+      : error.message || "The insight request could not be completed.";
+    elements.analystDisclaimer.textContent = "No answer was generated. Your deterministic dashboard results remain unchanged.";
+    elements.analystAnswer.hidden = false;
+  } finally {
+    elements.analystAnswer.setAttribute("aria-busy", "false");
+    elements.analystSubmit.disabled = false;
+    document.querySelectorAll("[data-analyst-prompt]").forEach((button) => { button.disabled = false; });
+  }
 }
 
 async function readSelectedFile() {
@@ -1257,6 +1384,24 @@ elements.form.addEventListener("submit", async (event) => {
     elements.runButton.disabled = false;
     elements.runButton.querySelector("span:first-child").textContent = "Run analysis";
   }
+});
+
+elements.analystForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const question = elements.analystQuestion.value.trim();
+  if (!question) {
+    elements.analystQuestion.focus();
+    return;
+  }
+  await askAnalyst(question);
+});
+
+document.querySelectorAll("[data-analyst-prompt]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const question = button.dataset.analystPrompt;
+    elements.analystQuestion.value = question;
+    await askAnalyst(question);
+  });
 });
 
 elements.healthCheck.addEventListener("click", checkService);

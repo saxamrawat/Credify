@@ -359,10 +359,75 @@ establish outcomes, causes, intervention effects, or fairness.
 See the [complete Phase 9 documentation](docs/portfolio_insights_dashboard.md)
 for the plan and all 14 step walkthroughs in order.
 
-### Phase 10 — GenAI Analyst Layer · Planned
+### Phase 10 — GenAI Analyst Layer · In progress
 
 Add natural-language summaries or portfolio questions only after the
 dashboard's calculations, definitions, and workflows are stable.
+The proposed sequence is documented in the
+[Phase 10 plan](docs/genai_analyst_layer_plan.md): define bounded analyst use
+cases; choose the open-model and experimentation strategy; define minimized evidence context;
+build deterministic context assembly; add grounded structured generation;
+integrate the dashboard experience; add explicit steps to select a Hugging
+Face checkpoint, prepare reviewed synthetic fine-tuning examples, build a
+Kaggle LoRA workflow, connect the trained artifact to local inference, compare
+base and tuned models, and then prepare for Phase 11 deployment. Each step
+still requires the user's choice before implementation. Step 10.1 is complete; see the
+[use cases and boundaries](docs/phase_10_step_10_1_use_cases_and_boundaries.md).
+Step 10.2 is also complete: the user selected an open-weight Hugging Face
+approach and Kaggle training. The original prompt-first plan has been updated
+to include actual fine-tuning and user-run Kaggle code in Steps 10.8–10.12.
+See the [model strategy](docs/phase_10_step_10_2_open_model_and_kaggle_strategy.md)
+and [Phase 10 plan](docs/genai_analyst_layer_plan.md).
+Step 10.3 is complete: the LLM context is restricted to traceable aggregates
+and explicitly requested grouped explanations, with raw rows and identifiers
+excluded. See the [trusted context contract](docs/phase_10_step_10_3_trusted_context_contract.md).
+Step 10.4 is complete: FastAPI now recomputes and returns typed, minimized
+analyst evidence from the validated portfolio and capacity request. It does
+not call a language model yet. See the [server context assembly walkthrough](docs/phase_10_step_10_4_server_context_assembly.md).
+Step 10.5 is complete: the API now supports locally hosted Hugging Face
+generation with structured claims and server-validated evidence references.
+It stays disabled until a local model path and the small-cohort policy are
+configured. See the [grounded generation walkthrough](docs/phase_10_step_10_5_grounded_generation.md).
+Step 10.6 is complete: the Overview now has an optional portfolio brief and
+bounded question panel. It shows generated claims with server-attached
+evidence, handles unavailable/refused responses, and keeps no conversation
+history. Live generation remains gated until a tuned model passes Step 10.12
+and a minimum-cell threshold is explicitly approved. See the
+[dashboard experience walkthrough](docs/phase_10_step_10_6_dashboard_experience.md).
+Step 10.7 is complete for this iteration: 14 synthetic-data checks pass for
+evidence references, privacy exclusions, suppression boundaries, and service
+failures. The minimum-cell threshold remains unset by decision, so generation
+stays disabled. Real-model review and threshold selection are activation
+prerequisites once a checkpoint and representative portfolio are available.
+See the [evaluation walkthrough](docs/phase_10_step_10_7_evaluation.md).
+Step 10.8 is complete: `Qwen/Qwen3-8B` was selected at a pinned revision
+under Apache-2.0 for the Kaggle QLoRA workflow. The model was trained in
+Kaggle; its adapter and manifest are stored locally. The current DigitalOcean
+Droplet (1 vCPU, 1 GB RAM,
+25 GB disk) cannot serve it; Phase 11 must plan a resize or another host before
+activation. See the
+[checkpoint selection walkthrough](docs/phase_10_step_10_8_checkpoint_selection.md).
+Step 10.9 is complete: the user chose a hand-authored synthetic instruction
+set. Version `finetune_v1` contains 16 training, 4 validation, and 4 held-out
+examples; it uses invented aggregate evidence and the API's structured answer
+contract. See the [dataset walkthrough](docs/phase_10_step_10_9_synthetic_dataset.md).
+Step 10.10 is complete: a Kaggle notebook now runs QLoRA on the pinned
+Qwen3-8B checkpoint using only the training and validation files. It saves an
+adapter and manifest. The workspace did not run it; the user completed a run
+on a Tesla T4. The manifest records 16 train examples and 4 validation
+examples. See the
+[Kaggle QLoRA walkthrough](docs/phase_10_step_10_10_kaggle_qlora.md) and
+[notebook](notebooks/genai_qwen3_8b_qlora.ipynb).
+Step 10.11 is complete: the local provider loads the pinned Qwen3-8B base in
+4-bit NF4 and attaches the Kaggle PEFT adapter. It checks model provenance
+and stays behind the existing policy gate. No base checkpoint was downloaded
+in this workspace, and the 1 GB Droplet cannot serve the model. See the
+[adapter inference walkthrough](docs/phase_10_step_10_11_adapter_inference.md).
+Step 10.12 is in progress: Option B is selected. A nine-case Kaggle notebook
+compares the base and tuned model, records automated contract checks and
+resource use, and creates a paired analyst-review sheet. Kaggle execution and
+human review are pending. See the [model evaluation walkthrough](docs/phase_10_step_10_12_model_evaluation.md)
+and [comparison notebook](notebooks/genai_model_comparison_phase10_step10_12.ipynb).
 
 ### Phase 11 — Deployment to Cloud Droplet · Planned · Final Phase
 

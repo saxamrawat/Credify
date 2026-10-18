@@ -163,6 +163,36 @@
             <span class="note-icon" aria-hidden="true">i</span>
             <p><strong>Interpretation:</strong> Predicted probabilities summarize model estimates, not observed outcomes or expected losses. Portfolio patterns are descriptive and do not show that an intervention will change outcomes.</p>
           </div>
+
+          <section class="card analyst-card" aria-labelledby="analyst-title">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">OPTIONAL GENERATED COMMENTARY</p>
+                <h3 id="analyst-title">Ask about this portfolio</h3>
+                <p>Answers use approved portfolio summaries and the current Explore filters. No conversation history is saved.</p>
+              </div>
+              <span class="chart-mark analyst-mark" aria-hidden="true">✳</span>
+            </div>
+            <div class="analyst-prompts" aria-label="Suggested questions">
+              <button class="prompt-chip" type="button" data-analyst-prompt="Summarize this portfolio and its review capacity.">Create portfolio brief</button>
+              <button class="prompt-chip" type="button" data-analyst-prompt="What do the predicted risk bands show for this portfolio?">Explain risk bands</button>
+              <button class="prompt-chip" type="button" data-analyst-prompt="Why might the review queue leave some capacity unused?">Explain queue capacity</button>
+            </div>
+            <form class="analyst-form" id="analyst-form">
+              <label class="analyst-question-label" for="analyst-question">Ask one question</label>
+              <div class="analyst-input-row">
+                <textarea id="analyst-question" rows="2" maxlength="1000" placeholder="For example: What stands out in the currently filtered cohort?" required></textarea>
+                <button class="primary-button" id="analyst-submit" type="submit"><span>Ask</span><span aria-hidden="true">→</span></button>
+              </div>
+              <p class="analyst-help">Questions are limited to displayed metrics, cohort summaries, queue behavior, and model explanation limits.</p>
+            </form>
+            <div class="analyst-answer" id="analyst-answer" aria-live="polite" aria-busy="false" hidden>
+              <p class="analyst-state" id="analyst-state"></p>
+              <div class="analyst-claims" id="analyst-claims"></div>
+              <div class="analyst-citations" id="analyst-citations"></div>
+              <p class="analyst-disclaimer" id="analyst-disclaimer"></p>
+            </div>
+          </section>
         </section>
 
         <section class="explore-view" id="explore-view" aria-labelledby="explore-title" hidden>
