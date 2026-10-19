@@ -28,6 +28,8 @@ const elements = {
   formMessage: document.querySelector("#form-message"),
   status: document.querySelector("#service-status"),
   healthCheck: document.querySelector("#health-check"),
+  healthCheckControl: document.querySelector("#health-check-control"),
+  healthCheckFeedback: document.querySelector("#health-check-feedback"),
   emptyState: document.querySelector("#empty-state"),
   results: document.querySelector("#results-section"),
   metrics: document.querySelector("#metric-grid"),
@@ -122,6 +124,17 @@ function setServiceStatus(ready, message) {
   elements.status.classList.toggle("is-ready", ready);
   elements.status.classList.toggle("is-error", !ready);
   elements.status.lastChild.textContent = ` ${message}`;
+}
+
+function setHealthCheckFeedback(state, message) {
+  elements.healthCheckControl.classList.toggle("is-checking", state === "checking");
+  elements.healthCheckControl.classList.toggle("is-ready", state === "ready");
+  elements.healthCheckControl.classList.toggle("is-error", state === "error");
+  elements.healthCheckFeedback.textContent = message;
+}
+
+function statusCheckedAt() {
+  return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
 function parseCsv(text) {
@@ -713,7 +726,7 @@ function renderCapacity(result) {
   const percentage = denominator > 0 ? Math.round(safeUtilization * 100) : null;
   const degrees = safeUtilization * 360;
 
-  elements.capacityRing.style.background = `conic-gradient(#438675 0deg ${degrees}deg, #e8efeb ${degrees}deg 360deg)`;
+  elements.capacityRing.style.background = `conic-gradient(#397ba8 0deg ${degrees}deg, #e8eef3 ${degrees}deg 360deg)`;
   elements.capacityPercent.textContent = percentage === null ? "—" : `${percentage}%`;
 
   const items = [
@@ -871,15 +884,31 @@ function applyExploreFilters() {
   const maximumScore = elements.scoreMaxFilter.value === "" ? 1 : Number(elements.scoreMaxFilter.value);
   if (minimumScore > maximumScore) {
     elements.filterMessage.textContent = "Minimum predicted risk must not exceed maximum predicted risk.";
-    return null;
+    return [];
   }
-  elements.filterMessage.textContent = "";
   const band = elements.riskBandFilter.value;
   const reviewStatus = elements.reviewStatusFilter.value;
   const field = elements.featureFilter.value;
   const categoryValue = document.querySelector("#feature-filter-value")?.value ?? "";
   const featureMinimum = document.querySelector("#feature-filter-min")?.value;
   const featureMaximum = document.querySelector("#feature-filter-max")?.value;
+  const minimumFeatureValue = featureMinimum === undefined || featureMinimum === ""
+    ? null
+    : Number(featureMinimum);
+  const maximumFeatureValue = featureMaximum === undefined || featureMaximum === ""
+    ? null
+    : Number(featureMaximum);
+  if (
+    field
+    && !CATEGORICAL_FIELDS.has(field)
+    && minimumFeatureValue !== null
+    && maximumFeatureValue !== null
+    && minimumFeatureValue > maximumFeatureValue
+  ) {
+    elements.filterMessage.textContent = `Minimum ${field} must not exceed maximum ${field}.`;
+    return [];
+  }
+  elements.filterMessage.textContent = "";
 
   return currentPortfolio.filter((record) => {
     const score = record.predicted_default_probability;
@@ -890,8 +919,8 @@ function applyExploreFilters() {
     if (reviewStatus === "not-selected" && record.selected_for_review) return false;
     if (field && CATEGORICAL_FIELDS.has(field) && categoryValue && String(record[field]) !== categoryValue) return false;
     if (field && !CATEGORICAL_FIELDS.has(field)) {
-      if (featureMinimum !== undefined && featureMinimum !== "" && record[field] < Number(featureMinimum)) return false;
-      if (featureMaximum !== undefined && featureMaximum !== "" && record[field] > Number(featureMaximum)) return false;
+      if (minimumFeatureValue !== null && record[field] < minimumFeatureValue) return false;
+      if (maximumFeatureValue !== null && record[field] > maximumFeatureValue) return false;
     }
     return true;
   });
@@ -1030,7 +1059,6 @@ function renderCustomerTable(rows) {
 function runExploreFilters(resetPage = false) {
   if (resetPage) currentPage = 0;
   const rows = applyExploreFilters();
-  if (rows === null) return;
   filteredPortfolio = rows;
   elements.exploreCount.textContent = `${formatCount(rows.length)} of ${formatCount(currentPortfolio.length)} customers`;
   renderScoreDistribution(rows);
@@ -1194,14 +1222,23 @@ async function loadDashboardConfig() {
 }
 
 async function checkService() {
+  if (elements.healthCheck.disabled) return;
+  elements.healthCheck.disabled = true;
+  elements.healthCheck.textContent = "Checking…";
+  setHealthCheckFeedback("checking", "Checking service…");
   try {
     const response = await fetch("/health");
     if (!response.ok) throw new Error("Portfolio scoring is temporarily unavailable.");
     const health = await response.json();
     if (!health.model_loaded) throw new Error("Portfolio scoring isn’t ready yet. Try again shortly.");
     setServiceStatus(true, "Ready to score portfolios");
+    setHealthCheckFeedback("ready", `Ready · ${statusCheckedAt()}`);
   } catch (error) {
     setServiceStatus(false, "Portfolio scoring is temporarily unavailable.");
+    setHealthCheckFeedback("error", `Unavailable · ${statusCheckedAt()}`);
+  } finally {
+    elements.healthCheck.disabled = false;
+    elements.healthCheck.textContent = "Check status";
   }
 }
 
@@ -1247,6 +1284,7 @@ elements.form.addEventListener("submit", async (event) => {
 
     renderOverview(payload, customers);
     setServiceStatus(true, "Ready to score portfolios");
+    setHealthCheckFeedback("ready", `Ready · ${statusCheckedAt()}`);
     showMessage(`Analysis complete for ${formatCount(payload.population_count)} customers.`, "success");
   } catch (error) {
     const message = error instanceof TypeError
@@ -1271,6 +1309,13 @@ elements.viewLinks.forEach((link) => {
     setActiveView(link.dataset.view);
     if (currentResult) window.location.hash = link.dataset.view;
   });
+});
+
+window.addEventListener("hashchange", () => {
+  const view = window.location.hash.slice(1);
+  if (["overview", "explore", "queue", "feature-insights"].includes(view)) {
+    setActiveView(view);
+  }
 });
 
 [
@@ -1312,4 +1357,7 @@ elements.queueNextPage.addEventListener("click", () => {
 
 loadDashboardConfig()
   .then(checkService)
-  .catch(() => setServiceStatus(false, "Portfolio scoring is temporarily unavailable."));
+  .catch(() => {
+    setServiceStatus(false, "Portfolio scoring is temporarily unavailable.");
+    setHealthCheckFeedback("error", "Dashboard setup unavailable");
+  });

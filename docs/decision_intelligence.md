@@ -2,6 +2,14 @@
 
 This document brings together the complete written records for Phase 7. The original step documents are presented in phase order; the supplementary holdout analysis appears between Steps 7.4 and 7.5 to reflect when it was performed. Content is retained, including original code listings and reproduction instructions. Internal links between the former documents now point to the corresponding section in this document.
 
+## Phase overview
+
+- **Status:** Complete.
+- **Objective:** Prioritize customers for limited analyst attention using predicted default risk and an explicit review-capacity rule.
+- **Scope:** Audit available decision inputs, assess ranking, illustrate capacity scenarios, implement a deterministic queue, and evaluate review policies.
+- **Outcome and evidence:** The phase delivered a deterministic, tie-aware review queue and policy analysis; full Phase 7 validation passed 176 tests.
+- **Limitations:** The data has no intervention costs, outcomes, or causal evidence. The queue prioritizes review and does not claim that an intervention prevents default.
+
 ## Contents
 
 - [Phase 7.2 — Decision-Input Audit](#phase-7-2-decision-input-audit)

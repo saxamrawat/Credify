@@ -1,5 +1,29 @@
 # Phase 5 — Model Development & Evaluation
 
+## Phase overview
+
+- **Status:** Complete.
+- **Objective:** Compare, tune, calibrate, and evaluate models for default-risk prediction.
+- **Scope:** Engineer historical-behavior features; compare candidate models; tune leading candidates; assess probability quality and generalization.
+- **Outcome and evidence:** HistGradientBoosting with engineered features was selected. Untouched test metrics were ROC-AUC 0.7800, PR-AUC 0.5515, and Brier score 0.1352.
+- **Limitations:** These metrics describe the historical UCI test population and do not establish performance on a modern or different customer population.
+
+## Contents
+
+- [Objective](#objective)
+- [Feature engineering](#feature-engineering)
+- [Original versus engineered features](#original-vs-engineered-features)
+- [Candidate models](#candidate-models)
+- [Hyperparameter tuning](#hyperparameter-tuning)
+- [Probability evaluation and calibration](#probability-evaluation-and-calibration)
+- [Final model selection](#final-model-selection)
+- [Untouched test evaluation](#untouched-test-evaluation)
+- [Validation versus test](#validation-vs-test)
+- [Reproducibility and validation](#reproducibility-and-validation)
+- [Limitations](#limitations)
+- [Phase 6 handoff](#phase-6-handoff)
+- [Conclusion](#conclusion)
+
 ## Objective
 Develop, compare, tune, calibrate, and evaluate models for credit-card default prediction, with emphasis on useful risk probabilities and generalization.
 

@@ -2,6 +2,14 @@
 
 This combined document preserves the complete Phase 9 plan and every step document in order. Each source document is included in full below.
 
+## Phase overview
+
+- **Status:** Complete.
+- **Objective:** Build a polished analyst dashboard for understanding portfolios, exploring cohorts, reviewing the capacity-limited queue, and inspecting customer explanations.
+- **Scope:** Custom HTML/CSS/JavaScript over FastAPI, with portfolio insights, responsive views, exports, customer drilldown, and responsible-use explanations.
+- **Outcome and evidence:** The dashboard shipped with four connected views and automated validation passed 210 tests.
+- **Limitations:** Portfolio summaries are descriptive. They do not establish outcomes, causes, intervention effects, or fairness conclusions.
+
 ## Contents
 
 1. [Phase 9 — Portfolio Insights Dashboard](#phase-9-plan)

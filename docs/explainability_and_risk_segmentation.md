@@ -1,5 +1,26 @@
 # Phase 6 — Explainability and Risk Segmentation
 
+## Phase overview
+
+- **Status:** Complete.
+- **Objective:** Explain the selected model's global patterns and individual predictions, and summarize probabilities with descriptive risk bands.
+- **Scope:** Validation-based permutation importance, engineered-feature relationships, local explanations, customer summaries, and risk bands.
+- **Outcome and evidence:** Analyst-facing global and local explanations and descriptive validation risk bands were delivered; the phase validation passed 134 tests.
+- **Limitations:** Explanations describe model associations, not causes or intervention effects. The held-out test set is excluded from explanation development.
+
+## Contents
+
+- [Purpose and scope](#purpose-and-scope)
+- [Step 6.1 — Explainability requirements](#step-6-1)
+- [Step 6.2 — Global feature importance](#step-6-2)
+- [Step 6.3 — Engineered-feature relationships](#step-6-3)
+- [Step 6.4 — Local explanation method](#step-6-4)
+- [Step 6.5 — Individual customer explanations](#step-6-5)
+- [Step 6.6 — Descriptive risk bands](#step-6-6)
+- [Step 6.7 — Phase validation](#step-6-7)
+- [Reproduction commands](#reproduction-commands)
+- [Phase conclusion and limitations](#phase-conclusion-and-limitations)
+
 ## Purpose and scope
 
 Phase 6 explains how the selected credit-default model behaves, investigates
@@ -18,6 +39,7 @@ The held-out test set is not used for feature importance, relationship
 analysis, local explanation, or risk-band construction. The final Phase 5
 model and its parameters remain unchanged.
 
+<a id="step-6-1"></a>
 ## Step 6.1 — Explainability requirements
 
 Global explanations should describe the patterns the model generally uses
@@ -27,6 +49,7 @@ Explanations should be analyst-readable, show direction where supported,
 provide probability context, and distinguish predictive association from
 causation.
 
+<a id="step-6-2"></a>
 ## Step 6.2 — Global feature importance
 
 Permutation importance was calculated on validation data using Average
@@ -55,6 +78,7 @@ columns can share information. Near-zero or slightly negative permutation
 importance does not mean a feature is protective or causal; it means that
 shuffling it did not reduce validation Average Precision in this run.
 
+<a id="step-6-3"></a>
 ## Step 6.3 — Engineered-feature relationships
 
 The 20 engineered features are deterministic transformations of original
@@ -86,6 +110,7 @@ not estimate conditional predictive contribution. Importance for an
 engineered feature and its sources must not be added or described as
 independent contributions.
 
+<a id="step-6-4"></a>
 ## Step 6.4 — Local explanation method
 
 The project uses grouped interventional Shapley values for four disjoint
@@ -111,6 +136,7 @@ behavior under these comparisons; they are not causes or effects of real
 interventions. The background mean is not a business cutoff or an
 individual counterfactual outcome.
 
+<a id="step-6-5"></a>
 ## Step 6.5 — Individual customer explanations
 
 An analyst-facing explanation reports the model's estimated default
@@ -127,6 +153,7 @@ excluded from model features. An example validation prediction returned
 summary was produced with a 16-row background sample. This is an example
 of model output, not a recommendation about that customer.
 
+<a id="step-6-6"></a>
 ## Step 6.6 — Descriptive risk bands
 
 Four equal-frequency bands are fit from validation probabilities and
@@ -151,6 +178,7 @@ threshold is inferred because operational capacity, intervention costs,
 and a loss function have not been specified. These bands do not imply
 that an intervention will reduce default.
 
+<a id="step-6-7"></a>
 ## Step 6.7 — Phase validation
 
 The completed Phase 6 changes passed the full automated project suite:

@@ -3,23 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4f7f4" />
+    <meta name="theme-color" content="#f4f7fa" />
     <meta
       name="description"
-      content="Understand a scored customer portfolio and its review capacity."
+      content="Credify helps analysts understand predicted risk and review capacity across a customer portfolio."
     />
-    <title>Portfolio overview | Credit risk review</title>
+    <title>Credify | Portfolio insights</title>
     <link rel="stylesheet" href="/styles.css" />
     <script src="/app.js" defer></script>
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar" aria-label="Dashboard navigation">
-        <a class="brand" href="/" aria-label="Portfolio review home">
-          <span class="brand-mark" aria-hidden="true">P</span>
+        <a class="brand" href="/" aria-label="Credify home">
+          <span class="brand-mark" aria-hidden="true">C</span>
           <span class="brand-copy">
-            <strong>Portfolio</strong>
-            <span>Risk review</span>
+            <strong>Credify</strong>
+            <span>Portfolio intelligence</span>
           </span>
         </a>
 
@@ -57,10 +57,13 @@
 
       <main class="main-content" id="overview">
         <header class="topbar">
-          <div class="breadcrumb">Workspace <span aria-hidden="true">/</span> Overview</div>
+          <div class="breadcrumb">Credify <span aria-hidden="true">/</span> Overview</div>
           <div class="topbar-actions">
-            <button class="text-button" id="health-check" type="button">Check status</button>
-            <span class="avatar" aria-hidden="true">AR</span>
+            <div class="health-check-control" id="health-check-control">
+              <span class="health-check-indicator" aria-hidden="true"></span>
+              <span class="health-check-feedback" id="health-check-feedback" role="status" aria-live="polite">Waiting for status check</span>
+              <button class="text-button" id="health-check" type="button">Check status</button>
+            </div>
           </div>
         </header>
 
@@ -427,7 +430,7 @@
         </section>
 
         <footer class="page-footer">
-          <span>Credit risk review · Analyst workspace</span>
+          <span>Credify · Analyst workspace</span>
           <span>Model estimates support review prioritization only</span>
         </footer>
       </main>

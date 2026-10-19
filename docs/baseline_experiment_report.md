@@ -1,5 +1,27 @@
 # Phase 4 — Baseline Modeling Report
 
+## Phase overview
+
+- **Status:** Complete.
+- **Objective:** Establish simple, defensible predictive baselines and measure their stability before advanced modeling.
+- **Scope:** Compare a prior-based dummy model, logistic regression, and a decision tree using the Phase 3 split and training-only cross-validation.
+- **Outcome and evidence:** This report establishes the reference performance and modeling boundaries used by later phases. Detailed metrics and fold results follow below.
+- **Limitations:** Baseline results are comparative evidence, not a production model recommendation.
+
+## Contents
+
+- [Objective](#1-objective)
+- [Data and experimental boundary](#2-data-and-experimental-boundary)
+- [Baseline models](#3-baseline-models)
+- [Evaluation metrics](#4-evaluation-metrics)
+- [Single validation results](#5-single-validation-results)
+- [Five-fold cross-validation](#6-five-fold-cross-validation)
+- [Fold-level results](#7-fold-level-results)
+- [Interpretation](#8-interpretation)
+- [What the baseline establishes](#9-what-the-baseline-establishes)
+- [Modeling boundary](#10-modeling-boundary)
+- [Baseline conclusion](#11-baseline-conclusion)
+
 ## 1. Objective
 
 The purpose of Phase 4 baseline modeling is to establish simple, defensible machine-learning baselines before feature engineering, hyperparameter tuning, advanced models, or decision-threshold optimization.

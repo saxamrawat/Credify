@@ -1,6 +1,6 @@
-# Credit Card Propensity & Decision Intelligence Platform
+# Credify
 
-A machine learning and decision-intelligence project for estimating credit-card default risk and translating model predictions into actionable risk prioritization.
+Credify is a machine learning and decision-intelligence platform for estimating credit-card default risk and translating model predictions into risk-prioritization insights.
 
 ## Project Overview
 
@@ -222,6 +222,7 @@ Automated tests for reusable project functionality.
 #### `docs/`
 
 Project documentation, architectural decisions, methodology, and supporting documentation.
+Future phase records follow the [phase-document template](docs/phase_document_template.md).
 
 ## Environment Setup
 
@@ -300,6 +301,8 @@ train/validation/test splits.
 Established baseline classifiers and evaluation practices for comparison
 with later models.
 
+See the [Phase 4 baseline report](docs/baseline_experiment_report.md).
+
 ### Phase 5 — Model Development and Evaluation · Complete
 
 Compared and tuned candidate models, evaluated probability quality and
@@ -307,12 +310,16 @@ calibration, and selected HistGradientBoosting with engineered features.
 The untouched test-set ROC-AUC was 0.7800, PR-AUC was 0.5515, and Brier
 score was 0.1352.
 
+See the [Phase 5 model development and evaluation record](docs/model_development_and_evaluation.md).
+
 ### Phase 6 — Explainability and Risk Segmentation · Complete
 
 Added global feature importance, engineered-feature relationship
 analysis, grouped local explanations, analyst-facing customer summaries,
 and descriptive validation risk bands. The full test suite passed with
 134 tests.
+
+See the [Phase 6 explainability and risk segmentation record](docs/explainability_and_risk_segmentation.md).
 
 ### Phase 7 — Decision Intelligence and Risk Prioritization · Complete
 
@@ -359,16 +366,32 @@ establish outcomes, causes, intervention effects, or fairness.
 See the [complete Phase 9 documentation](docs/portfolio_insights_dashboard.md)
 for the plan and all 14 step walkthroughs in order.
 
-### Phase 10 — GenAI Analyst Layer · Planned
+### Phase 10 — Credify Product and Dashboard Polishing · Complete
 
-Add natural-language summaries or portfolio questions only after the
-dashboard's calculations, definitions, and workflows are stable.
+Polish the public-facing Credify identity and analyst dashboard while
+preserving the established API and decision logic.
+
+- **Complete:** 10.1 choose Credify and apply the public-facing name; 10.2
+  adopt a calm blue visual identity; 10.3 remove the decorative account
+  avatar and make service-status feedback visible; 10.4 audit navigation,
+  filtering, and narrow-screen layouts for concrete usability issues.
+- **Complete:** 10.5 standardize phase-document structure and update this
+  roadmap; 10.6 consolidate the complete Phase 10 record.
+- **Remaining:** None.
+
+See the [complete Phase 10 documentation](docs/phase_10_credify_product_and_dashboard_polishing.md)
+for all six steps in order, including their decisions, detailed walkthroughs,
+verification notes, and phase closeout.
 
 ### Phase 11 — Deployment to Cloud Droplet · Planned · Final Phase
 
-Deploy the completed application to the user's cloud Droplet after the
-dashboard and GenAI phases are complete. Security, networking, runtime,
-monitoring, backup, and production capacity decisions belong here.
+Deploy the polished Credify application to the user's cloud Droplet after
+Phase 10 is complete. Configure the planned `credify.saxam.dev` hostname,
+DNS, and HTTPS, and document runtime, security, monitoring, backup, and
+production-capacity decisions here.
+
+Authentify sign-in integration is a later feature update, after Authentify is
+available as an API service; it is outside the deployment phase.
 
 ## Modeling Principles
 
@@ -456,7 +479,7 @@ Analytics Interface / API
 Optional GenAI Interface
 ```
 
-GenAI, if introduced, will sit above deterministic analytical and decision tools. It will not replace the underlying statistical and business logic.
+Any future GenAI interface will sit above deterministic analytical and decision tools. It will not replace the underlying statistical and business logic and is outside the current polishing phase.
 
 ## Technology Stack
 

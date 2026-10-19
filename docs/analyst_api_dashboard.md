@@ -1,5 +1,24 @@
 # Phase 8 — Analyst API and Dashboard
 
+## Phase overview
+
+- **Status:** Complete.
+- **Objective:** Provide reusable portfolio scoring and deterministic review-queue logic through an API and an analyst-facing upload workflow.
+- **Scope:** Define the batch contract, package the locked model, implement FastAPI routes, build the initial Streamlit dashboard, and enforce the 30,000-customer cap.
+- **Outcome and evidence:** The scoring service and single-page dashboard workflow were integrated and documented, including accepted and rejected upload boundaries.
+- **Limitations:** This phase's Streamlit interface was the initial dashboard. Phase 9 replaced it with the custom HTML/CSS/JavaScript dashboard.
+
+## Contents
+
+- [Step 8.1 — Application architecture and analyst workflow](#step-8-1)
+- [Step 8.2 — Batch API contract](#step-8-2)
+- [Step 8.3 — Package the selected model for inference](#step-8-3)
+- [Step 8.4 — FastAPI scoring and review-queue service](#step-8-4)
+- [Step 8.5 — Single-page Streamlit analyst dashboard](#step-8-5)
+- [Step 8.6 — Local integration and verification](#step-8-6)
+- [Step 8.7 — Enforce the initial portfolio size limit](#step-8-7)
+
+<a id="step-8-1"></a>
 # Phase 8.1 — Application Architecture and Analyst Workflow
 
 ## Decision
@@ -116,6 +135,7 @@ contracts and implementation choices belong to subsequent steps.
 
 ---
 
+<a id="step-8-2"></a>
 # Phase 8.2 — Batch API Contract
 
 ## Purpose
@@ -338,6 +358,7 @@ against this agreed contract.
 
 ---
 
+<a id="step-8-3"></a>
 # Phase 8.3 — Package the Selected Model for Inference
 
 ## Goal
@@ -749,6 +770,7 @@ FastAPI service; no endpoint or dashboard code was added in this step.
 
 ---
 
+<a id="step-8-4"></a>
 # Phase 8.4 — FastAPI Scoring and Review-Queue Service
 
 ## Goal
@@ -1323,6 +1345,7 @@ def _prepare_features(
 
 ---
 
+<a id="step-8-5"></a>
 # Phase 8.5 — Single-Page Streamlit Analyst Dashboard
 
 ## Goal and chosen design
@@ -1856,6 +1879,7 @@ with st.expander("API status"):
 
 ---
 
+<a id="step-8-6"></a>
 # Phase 8.6 — Local Integration and Verification
 
 ## Goal
@@ -2525,6 +2549,7 @@ DEFAULT_MODEL_ARTIFACT_PATH = _default_model_artifact_path()
 
 ---
 
+<a id="step-8-7"></a>
 # Phase 8.7 — Enforce the Initial Portfolio Size Limit
 
 ## Goal and decision
