@@ -21,15 +21,6 @@ dependencies = [
 test = [
     "pytest>=8.0",
 ]
-genai-local = [
-    "accelerate==1.15.0",
-    "bitsandbytes==0.50.2",
-    "huggingface-hub==1.31.0",
-    "peft==0.21.2",
-    "safetensors>=0.4",
-    "torch>=2.6",
-    "transformers==5.20.1",
-]
 
 [tool.setuptools.packages.find]
 where = ["src"]

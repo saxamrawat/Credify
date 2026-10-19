@@ -290,32 +290,6 @@ h1 { margin-bottom: 6px; font-size: clamp(24px, 2.4vw, 32px); font-weight: 700; 
 .interpretation-note p { font-size: 10px; }
 .interpretation-note strong { color: #38584d; }
 
-.analyst-card { margin-top: 15px; }
-.analyst-card .card-heading { margin-bottom: 13px; }
-.analyst-card .eyebrow { margin: 0 0 5px; }
-.analyst-mark { background: #edf3ee; color: #547c69; }
-.analyst-prompts { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; }
-.prompt-chip { min-height: 31px; padding: 0 11px; border: 1px solid var(--line); border-radius: 99px; background: #f8faf8; color: #456258; cursor: pointer; font-size: 10px; font-weight: 600; }
-.prompt-chip:hover { border-color: #a9c4b5; background: #f0f6f1; }
-.prompt-chip:disabled { cursor: wait; opacity: .65; }
-.analyst-form { display: grid; gap: 6px; }
-.analyst-question-label { color: #536760; font-size: 10px; font-weight: 700; }
-.analyst-input-row { display: flex; align-items: stretch; gap: 9px; }
-.analyst-input-row textarea { width: 100%; min-height: 64px; resize: vertical; padding: 10px 11px; border: 1px solid var(--line-strong); border-radius: 9px; background: #fff; color: var(--ink-strong); font: inherit; font-size: 11px; line-height: 1.5; }
-.analyst-input-row textarea:focus-visible { outline: 2px solid #75a99d; outline-offset: 2px; }
-.analyst-input-row .primary-button { flex: 0 0 112px; align-self: flex-end; }
-.analyst-help { margin: 0; color: var(--ink-soft); font-size: 9px; line-height: 1.5; }
-.analyst-answer { margin-top: 14px; padding: 14px; border: 1px solid #dfe9e1; border-radius: 11px; background: #f8faf8; }
-.analyst-state { margin: 0 0 8px; color: #496d5d; font-size: 10px; font-weight: 700; }
-.analyst-claim { margin: 7px 0; color: #30443c; font-size: 11px; line-height: 1.6; }
-.analyst-claim-interpretation { color: #50645b; }
-.analyst-citations { margin-top: 10px; padding-top: 9px; border-top: 1px solid #e5ece6; }
-.analyst-citation-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
-.analyst-citation-list li { display: grid; gap: 2px; color: #4e655b; font-size: 9px; line-height: 1.45; }
-.analyst-citation-list strong { color: #38584d; font-size: 9px; }
-.analyst-citation-list small { color: var(--ink-soft); font-size: 9px; }
-.analyst-disclaimer { margin: 9px 0 0; color: var(--ink-soft); font-size: 9px; line-height: 1.5; }
-
 .explore-view { padding-top: 31px; }
 .explore-heading { margin-bottom: 15px; }
 .filters-card { margin-bottom: 15px; }
@@ -490,8 +464,6 @@ h1 { margin-bottom: 6px; font-size: clamp(24px, 2.4vw, 32px); font-weight: 700; 
   .metric-card { min-height: 104px; padding: 13px; }
   .metric-value { font-size: 22px; }
   .card { padding: 16px 14px; }
-  .analyst-input-row { flex-direction: column; }
-  .analyst-input-row .primary-button { flex-basis: auto; align-self: stretch; }
   .band-row { grid-template-columns: 68px minmax(45px, 1fr) 52px; gap: 8px; }
   .capacity-visual { gap: 17px; }
   .capacity-ring { width: 120px; height: 120px; }

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -14,17 +13,9 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from propensity_prediction.api.errors import (
-    AnalystModelUnavailable,
-    AnalystPolicyUnavailable,
-    AnalystProviderFailure,
-    AnalystProviderTimeout,
-    InvalidAnalystOutput,
     InvalidPortfolioError,
     ModelArtifactUnavailable,
 )
-from propensity_prediction.api.analyst_answer import AnalystAnswerService
-from propensity_prediction.api.analyst_context import AnalystContextService
-from propensity_prediction.api.local_llm import LocalHuggingFaceProvider
 from propensity_prediction.api.repository import ModelArtifactRepository
 from propensity_prediction.api.routes import router
 from propensity_prediction.api.service import ReviewQueueService
@@ -39,37 +30,16 @@ def _error_response(code: str, message: str, details: list[str]) -> dict:
     return {"error": {"code": code, "message": message, "details": details}}
 
 
-def _configured_minimum_cell_size() -> int | None:
-    raw_value = os.getenv("PROPENSITY_GENAI_MINIMUM_CELL_SIZE")
-    try:
-        value = int(raw_value) if raw_value is not None else None
-    except ValueError:
-        return None
-    return value if value is not None and value > 0 else None
-
-
 def create_app(
     artifact_path: str | Path = DEFAULT_MODEL_ARTIFACT_PATH,
 ) -> FastAPI:
     repository = ModelArtifactRepository(artifact_path)
-    local_llm_provider = LocalHuggingFaceProvider(
-        os.getenv("PROPENSITY_GENAI_BASE_MODEL_PATH"),
-        os.getenv("PROPENSITY_GENAI_ADAPTER_PATH"),
-    )
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         repository.load()
         app.state.model_repository = repository
         app.state.review_queue_service = ReviewQueueService(repository)
-        minimum_cell_size = _configured_minimum_cell_size()
-        if minimum_cell_size is not None:
-            local_llm_provider.load()
-        app.state.analyst_answer_service = AnalystAnswerService(
-            AnalystContextService(app.state.review_queue_service),
-            local_llm_provider,
-            minimum_cell_size,
-        )
         yield
 
     app = FastAPI(
@@ -103,7 +73,7 @@ def create_app(
             status_code=422,
             content=_error_response(
                 "INVALID_REQUEST_SCHEMA",
-                "The request does not match the API contract.",
+                "The request does not match the review-queue contract.",
                 details,
             ),
         )
@@ -120,56 +90,6 @@ def create_app(
                 str(exc),
                 [],
             ),
-        )
-
-    @app.exception_handler(AnalystModelUnavailable)
-    async def analyst_model_unavailable_handler(
-        request: Request,
-        exc: AnalystModelUnavailable,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=503,
-            content=_error_response("ANALYST_MODEL_UNAVAILABLE", str(exc), []),
-        )
-
-    @app.exception_handler(AnalystPolicyUnavailable)
-    async def analyst_policy_unavailable_handler(
-        request: Request,
-        exc: AnalystPolicyUnavailable,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=503,
-            content=_error_response("ANALYST_POLICY_UNAVAILABLE", str(exc), []),
-        )
-
-    @app.exception_handler(AnalystProviderTimeout)
-    async def analyst_provider_timeout_handler(
-        request: Request,
-        exc: AnalystProviderTimeout,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=504,
-            content=_error_response("ANALYST_PROVIDER_TIMEOUT", str(exc), []),
-        )
-
-    @app.exception_handler(AnalystProviderFailure)
-    async def analyst_provider_failure_handler(
-        request: Request,
-        exc: AnalystProviderFailure,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=502,
-            content=_error_response("ANALYST_PROVIDER_FAILURE", str(exc), []),
-        )
-
-    @app.exception_handler(InvalidAnalystOutput)
-    async def invalid_analyst_output_handler(
-        request: Request,
-        exc: InvalidAnalystOutput,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=502,
-            content=_error_response("INVALID_ANALYST_OUTPUT", str(exc), []),
         )
 
     @app.exception_handler(ModelArtifactUnavailable)

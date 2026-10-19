@@ -4,15 +4,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
 
-from propensity_prediction.api.analyst_answer import AnalystAnswerService
-from propensity_prediction.api.analyst_context import AnalystContextService
 from propensity_prediction.api.schemas import (
     APIErrorResponse,
-    AnalystAnswerResponse,
-    AnalystContextRequest,
-    AnalystContextResponse,
-    CustomerExplanationResponse,
     CustomerInput,
+    CustomerExplanationResponse,
     DashboardConfigResponse,
     HealthResponse,
     ReviewQueueRequest,
@@ -30,14 +25,6 @@ router = APIRouter()
 
 def get_review_queue_service(request: Request) -> ReviewQueueService:
     return request.app.state.review_queue_service
-
-
-def get_analyst_context_service(request: Request) -> AnalystContextService:
-    return AnalystContextService(get_review_queue_service(request))
-
-
-def get_analyst_answer_service(request: Request) -> AnalystAnswerService:
-    return request.app.state.analyst_answer_service
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -73,42 +60,6 @@ def create_review_queue(
     service: ReviewQueueService = Depends(get_review_queue_service),
 ) -> dict:
     return service.build_queue(payload)
-
-
-@router.post(
-    "/v1/analyst-context",
-    response_model=AnalystContextResponse,
-    responses={
-        400: {"model": APIErrorResponse},
-        422: {"model": APIErrorResponse},
-        503: {"model": APIErrorResponse},
-    },
-)
-def build_analyst_context(
-    payload: AnalystContextRequest,
-    service: AnalystContextService = Depends(get_analyst_context_service),
-) -> AnalystContextResponse:
-    """Recompute and return allowlisted aggregates for a future GenAI adapter."""
-    return service.build_context(payload)
-
-
-@router.post(
-    "/v1/analyst-answer",
-    response_model=AnalystAnswerResponse,
-    responses={
-        400: {"model": APIErrorResponse},
-        422: {"model": APIErrorResponse},
-        502: {"model": APIErrorResponse},
-        503: {"model": APIErrorResponse},
-        504: {"model": APIErrorResponse},
-    },
-)
-def create_analyst_answer(
-    payload: AnalystContextRequest,
-    service: AnalystAnswerService = Depends(get_analyst_answer_service),
-) -> AnalystAnswerResponse:
-    """Answer one bounded question from fresh server-built evidence."""
-    return service.answer(payload)
 
 
 @router.post("/v1/customer-explanation", response_model=CustomerExplanationResponse)
