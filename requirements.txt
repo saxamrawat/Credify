@@ -88,7 +88,7 @@ protobuf==7.36.2
 prompt_toolkit==3.0.53
 pyarrow==25.0.1
 pydeck==0.9.3
--e git+https://github.com/saxamrawat/Credit-Card-Propensity-And-Decision-Intelligence-Platform.git@6760051b9b3be05bbc9f232d927aff4b6bffcb30#egg=propensity_prediction
+-e .
 psutil==7.2.2
 ptyprocess==0.7.0
 pure_eval==0.2.4
