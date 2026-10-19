@@ -60,7 +60,7 @@ claims, and acceptance criteria for the phase.
 
 **Decision recorded:** Option C, a concise portfolio overview with deeper
 exploration views. The detailed decision and success criteria are in
-[Step 9.1](portfolio_insights_dashboard.md#step-9-1).
+[Step 9.1](phase_9_portfolio_insights_dashboard.md#step-9-1).
 
 ### 9.2 Choose the frontend architecture · Complete
 
@@ -77,7 +77,7 @@ is how much of the dashboard presentation layer to replace or extend.
 existing FastAPI service. Streamlit will be replaced, with no parallel
 fallback dashboard. The user wants the interface to feel stylish and easy on
 the eyes. See
-[Step 9.2](portfolio_insights_dashboard.md#step-9-2).
+[Step 9.2](phase_9_portfolio_insights_dashboard.md#step-9-2).
 
 The main tradeoff is that vanilla JavaScript keeps the frontend stack light,
 but requires disciplined modules and state management as views and
@@ -118,7 +118,7 @@ responsive behavior, color and typography rules, and accessibility targets.
 **Navigation direction selected:** sidebar navigation with separate views.
 The analyst flow, intent for each view, and state-preservation rules are
 recorded in
-[Step 9.3](portfolio_insights_dashboard.md#step-9-3).
+[Step 9.3](phase_9_portfolio_insights_dashboard.md#step-9-3).
 The user selected a calm light theme with an explicit easy-on-the-eyes
 requirement. Text and chart contrast must remain strong; risk colors will be
 restrained and paired with labels. Exact design tokens remain for wireframing.
@@ -154,7 +154,7 @@ of which calculations belong to the API, shared Python logic, or browser.
 and calculate score summaries in the FastAPI service. The packaged model
 reproduces the reference cut points. The response schema, formulas, and
 interpretation limits are documented in
-[Step 9.4](portfolio_insights_dashboard.md#step-9-4).
+[Step 9.4](phase_9_portfolio_insights_dashboard.md#step-9-4).
 
 ### 9.5 Build the portfolio overview · Complete
 
@@ -179,7 +179,7 @@ empty/error/loading states, and links into detailed views.
 risk-band distribution, and a review-capacity summary. The custom frontend is
 served by FastAPI and uses the API as its source for scores, bands, and queue
 calculations. The full walkthrough and code listings are in
-[Step 9.5](portfolio_insights_dashboard.md#step-9-5).
+[Step 9.5](phase_9_portfolio_insights_dashboard.md#step-9-5).
 
 ### 9.6 Add risk distribution and cohort exploration · Complete
 
@@ -206,7 +206,7 @@ browser. The view includes score range, fixed risk band, review status, ID
 search, input-field filters, group summaries, and paged customer rows. Group
 shares use the filtered cohort; numeric comparison quartiles use the full
 portfolio as stable boundaries. The detailed walkthrough is in
-[Step 9.6](portfolio_insights_dashboard.md#step-9-6).
+[Step 9.6](phase_9_portfolio_insights_dashboard.md#step-9-6).
 
 ### 9.7 Explain review capacity and queue construction · Complete
 
@@ -234,7 +234,7 @@ per-customer reason-code totals, and the API-ranked selected queue. It states
 the descending-score and whole-tie-group policy, and clarifies that updated
 capacity applies after the analyst runs the analysis again. No API contract
 change or browser-side queue calculation was needed. The detailed walkthrough
-is in [Step 9.7](portfolio_insights_dashboard.md#step-9-7).
+is in [Step 9.7](phase_9_portfolio_insights_dashboard.md#step-9-7).
 
 ### 9.8 Compare selected and non-selected customers descriptively · Complete
 
@@ -267,7 +267,7 @@ with exact counts and an interpretation note; no group is labeled good or bad,
 and no standardized or causal claim is made. The calculations are in the
 browser using fields already present in the scored customer records; the API
 contract and queue logic did not change. See the complete
-[Step 9.8](portfolio_insights_dashboard.md#step-9-8)
+[Step 9.8](phase_9_portfolio_insights_dashboard.md#step-9-8)
 walkthrough.
 
 ### 9.9 Add feature and repayment-pattern insights · Complete
@@ -302,7 +302,7 @@ values are not recomputed for an upload; the dashboard configuration now
 supplies the reviewed Phase 6 snapshot. The view distinguishes observed data
 from model behavior and explains that importance is not causation or an
 individual explanation. Complete code and the walkthrough are in
-[Step 9.9](portfolio_insights_dashboard.md#step-9-9).
+[Step 9.9](phase_9_portfolio_insights_dashboard.md#step-9-9).
 
 ### 9.10 Build customer drilldown and supported explanations · Complete
 

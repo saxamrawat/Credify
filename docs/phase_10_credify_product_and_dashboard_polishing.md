@@ -399,12 +399,12 @@ The shared overview and template make it easier to understand a phase before rea
 
 - `README.md`
 - `docs/phase_document_template.md`
-- `docs/baseline_experiment_report.md`
-- `docs/model_development_and_evaluation.md`
-- `docs/explainability_and_risk_segmentation.md`
-- `docs/decision_intelligence.md`
-- `docs/analyst_api_dashboard.md`
-- `docs/portfolio_insights_dashboard.md`
+- `docs/phase_4_baseline_experiment_report.md`
+- `docs/phase_5_model_development_and_evaluation.md`
+- `docs/phase_6_explainability_and_risk_segmentation.md`
+- `docs/phase_7_decision_intelligence.md`
+- `docs/phase_8_analyst_api_dashboard.md`
+- `docs/phase_9_portfolio_insights_dashboard.md`
 - `docs/phase_10_credify_product_and_dashboard_polishing.md` (this consolidated record)
 
 ## Verification

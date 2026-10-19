@@ -1247,7 +1247,7 @@ This is **not a numbered step in the original Phase 7 plan**. It adds ranking
 metrics to the Phase 5 holdout results. Original Step 7.5, implementing the
 deterministic decision engine, remains to be done.
 
-**Qualification:** [Phase 5's report](model_development_and_evaluation.md)
+**Qualification:** [Phase 5's report](phase_5_model_development_and_evaluation.md)
 already reports standard metrics on this same test split. Therefore this is
 not the first use of the holdout and is not an independent replication. The
 model was selected using validation results, and the capacity percentages
@@ -2241,4 +2241,4 @@ claim or an intervention rule.
 - [Deterministic decision-engine walkthrough](#phase-7-5-deterministic-review-queue-engine)
 - [Policy-scenario evaluation](#phase-7-6-evaluate-review-policy-scenarios)
 - [Supplementary holdout ranking assessment](#supplementary-phase-7-holdout-ranking-diagnostic)
-- [Phase 5 model development and evaluation](model_development_and_evaluation.md)
+- [Phase 5 model development and evaluation](phase_5_model_development_and_evaluation.md)

@@ -1,5 +1,8 @@
 # Credify
 
+### Deployment Link
+https://credify.saxam.dev/
+
 Credify is a machine learning and decision-intelligence platform for estimating credit-card default risk and translating model predictions into risk-prioritization insights.
 
 ## Project Overview
@@ -301,7 +304,7 @@ train/validation/test splits.
 Established baseline classifiers and evaluation practices for comparison
 with later models.
 
-See the [Phase 4 baseline report](docs/baseline_experiment_report.md).
+See the [Phase 4 baseline report](docs/phase_4_baseline_experiment_report.md).
 
 ### Phase 5 — Model Development and Evaluation · Complete
 
@@ -310,7 +313,7 @@ calibration, and selected HistGradientBoosting with engineered features.
 The untouched test-set ROC-AUC was 0.7800, PR-AUC was 0.5515, and Brier
 score was 0.1352.
 
-See the [Phase 5 model development and evaluation record](docs/model_development_and_evaluation.md).
+See the [Phase 5 model development and evaluation record](docs/phase_5_model_development_and_evaluation.md).
 
 ### Phase 6 — Explainability and Risk Segmentation · Complete
 
@@ -319,7 +322,7 @@ analysis, grouped local explanations, analyst-facing customer summaries,
 and descriptive validation risk bands. The full test suite passed with
 134 tests.
 
-See the [Phase 6 explainability and risk segmentation record](docs/explainability_and_risk_segmentation.md).
+See the [Phase 6 explainability and risk segmentation record](docs/phase_6_explainability_and_risk_segmentation.md).
 
 ### Phase 7 — Decision Intelligence and Risk Prioritization · Complete
 
@@ -335,7 +338,7 @@ effectiveness.
   7.8 run full Phase 7 validation (176 tests passed).
 - **Remaining:** None.
 
-See the [complete Phase 7 documentation](docs/decision_intelligence.md) for all step walkthroughs, code listings, analysis, and recommendations in order.
+See the [complete Phase 7 documentation](docs/phase_7_decision_intelligence.md) for all step walkthroughs, code listings, analysis, and recommendations in order.
 
 ### Phase 8 — Analyst API and Dashboard · Complete
 
@@ -349,10 +352,9 @@ See the [complete Phase 7 documentation](docs/decision_intelligence.md) for all 
   and API requests; verify the accepted and rejected boundaries.
 - **Remaining:** None. The 30,000-row limit is an initial operational cap;
   deployment on the target Droplet should review request and upload limits.
-- **Deployment:** reserved for the final project phase on the user's cloud
-  Droplet (Phase 11).
+- **Deployment:** completed on the user's Cloud Droplet in Phase 11.
 
-See the [complete Phase 8 documentation](docs/analyst_api_dashboard.md) for all seven steps in order, including the decisions, detailed code walkthroughs, integration verification, and 30,000-row portfolio cap.
+See the [complete Phase 8 documentation](docs/phase_8_analyst_api_dashboard.md) for all seven steps in order, including the decisions, detailed code walkthroughs, integration verification, and 30,000-row portfolio cap.
 
 ### Phase 9 — Portfolio Insights Dashboard · Complete
 
@@ -363,7 +365,7 @@ and responsive accessibility improvements. Automated validation passed 210
 tests. The dashboard describes model estimates and input patterns; it does not
 establish outcomes, causes, intervention effects, or fairness.
 
-See the [complete Phase 9 documentation](docs/portfolio_insights_dashboard.md)
+See the [complete Phase 9 documentation](docs/phase_9_portfolio_insights_dashboard.md)
 for the plan and all 14 step walkthroughs in order.
 
 ### Phase 10 — Credify Product and Dashboard Polishing · Complete
@@ -383,15 +385,24 @@ See the [complete Phase 10 documentation](docs/phase_10_credify_product_and_dash
 for all six steps in order, including their decisions, detailed walkthroughs,
 verification notes, and phase closeout.
 
-### Phase 11 — Deployment to Cloud Droplet · Planned · Final Phase
+### Phase 11 — Deployment to Cloud Droplet · Complete · Final Phase
 
-Deploy the polished Credify application to the user's cloud Droplet after
-Phase 10 is complete. Configure the planned `credify.saxam.dev` hostname,
-DNS, and HTTPS, and document runtime, security, monitoring, backup, and
-production-capacity decisions here.
+Deployed Credify at [credify.saxam.dev](https://credify.saxam.dev) with FastAPI,
+systemd, and Nginx. HTTPS and the public health check pass; a verified recovery
+bundle is stored off the Droplet.
 
-Authentify sign-in integration is a later feature update, after Authentify is
-available as an API service; it is outside the deployment phase.
+- **Complete:** 11.1–11.4 select the runtime and inspect the server; 11.5–11.8
+  route the hostname and prepare a restricted service account; 11.9–11.10
+  deploy the pinned application and configure HTTPS; 11.11 verify operation
+  and recovery; 11.12 document and close the phase.
+- **Operational limit:** The application accepts up to 30,000 rows and Nginx
+  allows 16 MiB for Credify requests. Maximum-load performance was not measured
+  on the 1 vCPU / 1 GB Droplet.
+- **Remaining:** None for deployment. Authentify sign-in is a later feature
+  update after Authentify becomes an API service.
+
+See the [complete Phase 11 documentation](docs/phase_11_cloud_droplet_deployment.md)
+for decisions, commands, verification evidence, operating notes, and recovery.
 
 ## Modeling Principles
 
